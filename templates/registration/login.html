@@ -1,0 +1,20 @@
+{% load static %}
+
+<p>
+  <img src="{% static 'vulnerabilities-vulnerabilities-everywhere.jpeg' %}" alt="Vulnerabilities vulnerabilities everywhere">
+</p>
+
+<p>
+  <h1>Maintain and share your video game collection on Gamez</h1>
+</p>
+
+<h2>To start cataloging, first log in</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Let me in</button>
+</form>
+
+<p>
+  No account yet? Click <a href="/accounts/signup">here</a>.
+</p>
