@@ -1,0 +1,18 @@
+- model: gamez.collection
+  pk: 1
+  fields:
+    user_id: 1
+    name: Tupu's awesome game collection
+    key: 1
+- model: gamez.collection
+  pk: 2
+  fields:
+    user_id: 2
+    name: Hupu's awesomer game collection
+    key: 2
+- model: gamez.collection
+  pk: 3
+  fields:
+    user_id: 3
+    name: Lupu's awesomest game collection
+    key: 3

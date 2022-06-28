@@ -1,0 +1,81 @@
+- model: gamez.game
+  pk: 1
+  fields:
+    name: Super Mario Bros
+    collection: 1
+    platform: 6
+    rating: 5
+    thumbnail: https://images.igdb.com/igdb/image/upload/t_cover_big/co2362.png
+    info: https://www.igdb.com/games/super-mario-bros
+- model: gamez.game
+  pk: 2
+  fields:
+    name: Super Mario Bros 2
+    collection: 1
+    platform: 6
+    rating: 4
+    thumbnail: https://images.igdb.com/igdb/image/upload/t_cover_big/co1wos.png
+    info: https://www.igdb.com/games/super-mario-bros-2
+- model: gamez.game
+  pk: 3
+  fields:
+    name: Super Mario Bros 3
+    collection: 1
+    platform: 6
+    rating: 3
+    thumbnail: https://images.igdb.com/igdb/image/upload/t_cover_big/co23jw.png
+    info: https://www.igdb.com/games/super-mario-bros-3
+- model: gamez.game
+  pk: 4
+  fields:
+    name: Grand Theft Auto
+    collection: 2
+    platform: 19
+    rating: 3
+    thumbnail: https://images.igdb.com/igdb/image/upload/t_cover_big/co2lb0.png
+    info: https://www.igdb.com/games/grand-theft-auto
+- model: gamez.game
+  pk: 5
+  fields:
+    name: 'Grand Theft Auto: San Andreas'
+    collection: 2
+    platform: 23
+    rating: 5
+    thumbnail: https://images.igdb.com/igdb/image/upload/t_cover_big/co2lb9.png
+    info: https://www.igdb.com/games/grand-theft-auto-san-andreas
+- model: gamez.game
+  pk: 6
+  fields:
+    name: Red Dead Redemption 2
+    collection: 2
+    platform: 36
+    rating: 5
+    thumbnail: https://images.igdb.com/igdb/image/upload/t_cover_big/co1q1f.png
+    info: https://www.igdb.com/games/red-dead-redemption-2
+- model: gamez.game
+  pk: 7
+  fields:
+    name: Civilization
+    collection: 3
+    platform: 27
+    rating: 2
+    thumbnail: https://images.igdb.com/igdb/image/upload/t_cover_big/co3z81.png
+    info: https://www.igdb.com/games/civilization
+- model: gamez.game
+  pk: 8
+  fields:
+    name: Pac-Man
+    collection: 3
+    platform: 9
+    rating: 2
+    thumbnail: https://images.igdb.com/igdb/image/upload/t_cover_big/co4x2y.png
+    info: https://www.igdb.com/games/pac-man--6
+- model: gamez.game
+  pk: 9
+  fields:
+    name: Tetris
+    collection: 3
+    platform: 13
+    rating: 3
+    thumbnail: https://images.igdb.com/igdb/image/upload/t_cover_big/co4szc.png
+    info: https://www.igdb.com/games/tetris--9

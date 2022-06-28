@@ -1,0 +1,240 @@
+- model: gamez.platform
+  pk: 1
+  fields:
+    name: Magnavox Odyssey
+    year: 1972
+    gen: 1
+- model: gamez.platform
+  pk: 2
+  fields:
+    name: Atari 2600
+    year: 1977
+    gen: 2
+- model: gamez.platform
+  pk: 3
+  fields:
+    name: Intellivision
+    year: 1979
+    gen: 2
+- model: gamez.platform
+  pk: 4
+  fields:
+    name: Atari 5200
+    year: 1982
+    gen: 2
+- model: gamez.platform
+  pk: 5
+  fields:
+    name: Colecovision
+    year: 1982
+    gen: 2
+- model: gamez.platform
+  pk: 6
+  fields:
+    name: NES
+    year: 1985
+    gen: 3
+- model: gamez.platform
+  pk: 7
+  fields:
+    name: Atari 7800
+    year: 1984
+    gen: 3
+- model: gamez.platform
+  pk: 8
+  fields:
+    name: Sega Master System
+    year: 1986
+    gen: 3
+- model: gamez.platform
+  pk: 9
+  fields:
+    name: Game Boy
+    year: 1989
+    gen: 3
+- model: gamez.platform
+  pk: 10
+  fields:
+    name: TurboGrafx-16
+    year: 1989
+    gen: 4
+- model: gamez.platform
+  pk: 11
+  fields:
+    name: Sega Genesis
+    year: 1989
+    gen: 4
+- model: gamez.platform
+  pk: 12
+  fields:
+    name: SNES
+    year: 1991
+    gen: 4
+- model: gamez.platform
+  pk: 13
+  fields:
+    name: CD-I
+    year: 1991
+    gen: 4
+- model: gamez.platform
+  pk: 14
+  fields:
+    name: Neo Geo
+    year: 1991
+    gen: 4
+- model: gamez.platform
+  pk: 15
+  fields:
+    name: Sega CD
+    year: 1992
+    gen: 4
+- model: gamez.platform
+  pk: 16
+  fields:
+    name: Atari Jaguar
+    year: 1993
+    gen: 5
+- model: gamez.platform
+  pk: 17
+  fields:
+    name: 3DO
+    year: 1993
+    gen: 5
+- model: gamez.platform
+  pk: 18
+  fields:
+    name: Sega 32X
+    year: 1994
+    gen: 5
+- model: gamez.platform
+  pk: 19
+  fields:
+    name: PlayStation
+    year: 1995
+    gen: 5
+- model: gamez.platform
+  pk: 20
+  fields:
+    name: Sega Saturn
+    year: 1995
+    gen: 5
+- model: gamez.platform
+  pk: 21
+  fields:
+    name: Nintendo 64
+    year: 1996
+    gen: 5
+- model: gamez.platform
+  pk: 22
+  fields:
+    name: Sega Dreamcast
+    year: 1999
+    gen: 6
+- model: gamez.platform
+  pk: 23
+  fields:
+    name: PlayStation 2
+    year: 2000
+    gen: 6
+- model: gamez.platform
+  pk: 24
+  fields:
+    name: Nintendo GameCube
+    year: 2001
+    gen: 6
+- model: gamez.platform
+  pk: 25
+  fields:
+    name: Xbox
+    year: 2001
+    gen: 6
+- model: gamez.platform
+  pk: 26
+  fields:
+    name: Game Boy Advance
+    year: 2001
+    gen: 6
+- model: gamez.platform
+  pk: 27
+  fields:
+    name: N-Gage
+    year: 2003
+    gen: 6
+- model: gamez.platform
+  pk: 28
+  fields:
+    name: Nintendo DS
+    year: 2004
+    gen: 7
+- model: gamez.platform
+  pk: 29
+  fields:
+    name: PlayStation Portable
+    year: 2004
+    gen: 7
+- model: gamez.platform
+  pk: 30
+  fields:
+    name: Xbox 360
+    year: 2005
+    gen: 7
+- model: gamez.platform
+  pk: 31
+  fields:
+    name: PlayStation 3
+    year: 2006
+    gen: 7
+- model: gamez.platform
+  pk: 32
+  fields:
+    name: Nintendo Wii
+    year: 2006
+    gen: 7
+- model: gamez.platform
+  pk: 33
+  fields:
+    name: Nintendo Wii U
+    year: 2012
+    gen: 7
+- model: gamez.platform
+  pk: 34
+  fields:
+    name: Nintendo 3DS
+    year: 2011
+    gen: 8
+- model: gamez.platform
+  pk: 35
+  fields:
+    name: PlayStation Vita
+    year: 2012
+    gen: 8
+- model: gamez.platform
+  pk: 36
+  fields:
+    name: PlayStation 4
+    year: 2013
+    gen: 8
+- model: gamez.platform
+  pk: 37
+  fields:
+    name: Xbox One
+    year: 2013
+    gen: 8
+- model: gamez.platform
+  pk: 38
+  fields:
+    name: Nintendo Switch
+    year: 2017
+    gen: 8
+- model: gamez.platform
+  pk: 39
+  fields:
+    name: PlayStation 5
+    year: 2020
+    gen: 9
+- model: gamez.platform
+  pk: 40
+  fields:
+    name: Xbox Series X/S
+    year: 2020
+    gen: 9
