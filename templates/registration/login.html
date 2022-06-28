@@ -1,4 +1,6 @@
+{% extends 'base.html' %}
 {% load static %}
+{% block content %}
 
 <p>
   <img src="{% static 'vulnerabilities-vulnerabilities-everywhere.jpeg' %}" alt="Vulnerabilities vulnerabilities everywhere">
@@ -18,3 +20,5 @@
 <p>
   No account yet? Click <a href="/accounts/signup">here</a>.
 </p>
+
+{% endblock %}

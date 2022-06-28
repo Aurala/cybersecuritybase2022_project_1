@@ -1,13 +1,18 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <link rel="stylesheet" href="style.css">
-    <title>Gamez - THE Video Game Cataloging App</title>
-</head>
 
-<body>
-    <div id="content">
-        {% block content %}{% endblock %}
-    </div>
-</body>
+    <head>
+        <link rel="stylesheet" href="{% static 'style.css' %}">
+        <title>Gamez - The (Vulnerable) Video Game Cataloging App</title>
+    </head>
+
+    <body>
+        <div id="site-wrapper">
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </body>
+
 </html>
