@@ -9,6 +9,9 @@
     </head>
 
     <body>
+
+        You are logged in as {{ request.user }}. <a href="{% url 'logout' %}">Log out.</a>
+
         <div id="site-wrapper">
             {% block content %}
             {% endblock content %}

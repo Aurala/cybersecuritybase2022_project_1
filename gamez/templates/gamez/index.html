@@ -9,6 +9,7 @@
         <th>Thumbnail</th>
         <th>Name</th>
         <th>Platform</th>
+        <th>Rating</th>
         <th>Actions</th>
     </tr>
     {% for game in games %}
@@ -16,9 +17,17 @@
         <td><a href="{{ game.info }}"><img src="{{ game.thumbnail }}" height="100"></a></td>
         <td>{{ game.name }}</td>
         <td>{{ game.platform.name }}</td>
-        <td></td>
+        <td>
+            {{ game.rating }} / 5
+        </td>
+        </td>
+        <td>
+            <a href="delete/{{ game.id }}">Delete</a>
+        </td>
     </tr>
     {% endfor %}
 </table>
+
+<a href="new/">Add a game</a>
 
 {% endblock %}
