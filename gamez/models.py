@@ -17,8 +17,8 @@ class Collection(models.Model):
 
 class Game(models.Model):
     collection = models.ForeignKey(Collection, default=0, on_delete=models.CASCADE)
-    thumbnail = models.URLField(null=True)
-    info = models.URLField(null=True)
+    thumbnail = models.CharField(max_length=250, default='')
+    info = models.CharField(max_length=250, default='')
     name = models.CharField(max_length=50)
     platform = models.ForeignKey(Platform, default=0, on_delete=models.CASCADE)
     rating = models.IntegerField(null=True)
