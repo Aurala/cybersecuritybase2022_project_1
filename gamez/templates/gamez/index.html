@@ -28,6 +28,12 @@
     {% endfor %}
 </table>
 
-<a href="new/">Add a game</a>
+<p>
+    <a href="new/">Add a game</a>
+</p>
+
+<p>
+    Share your collection with the world! Your brag URL is: http://{{ request.get_host }}/brag/{{ collection.key }}
+</p>
 
 {% endblock %}
