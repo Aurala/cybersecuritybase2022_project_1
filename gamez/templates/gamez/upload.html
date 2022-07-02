@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<h1>Restore your game collection {{ collection.name }}</h1>
+
+<form method="POST" action="restore/" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" id="file" name="file">
+    <input type="submit">
+</form>
+
+{% endblock %}

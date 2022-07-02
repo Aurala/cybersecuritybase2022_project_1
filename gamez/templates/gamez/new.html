@@ -2,6 +2,32 @@
 {% load static %}
 {% block content %}
 
-<h1>Placeholder for a form to input game details</h1>
+<h1>Add a new game to the game collection {{ collection.name }}</h1>
+
+<form method="POST" action="add/">
+    {% csrf_token %}
+    <input type="hidden" id="collection" name="collection" value="{{ collection.id }}">
+    <label for="thumbnail">Thumbnail</label><br/>
+    <input type="text" id="thumbnail" name="thumbnail"><br/>
+    <label for="info">Info:</label><br/>
+    <input type="text" id="info" name="info"><br/>
+    <label for="name">Name:</label><br/>
+    <input type="text" id="name" name="name"><br/>
+    <label for="name">Platform:</label><br/>
+        <select name="platform" id="platform">
+            {% for platform in platforms %}
+                <option value="{{ platform.id }}">{{ platform.name }}</option>
+            {% endfor %}
+        </select><br/>
+    <label for="name">Rating:</label><br/>
+        <select name="rating" id="rating">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select><br/><br/>
+    <button type="submit">Let me in</button>
+</form>
 
 {% endblock %}
