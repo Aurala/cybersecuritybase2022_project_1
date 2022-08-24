@@ -1,7 +1,6 @@
 import hashlib
 import pickle
 import base64
-from urllib.parse import _NetlocResultMixinStr
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required

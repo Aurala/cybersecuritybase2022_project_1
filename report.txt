@@ -1,0 +1,106 @@
+LINK: https://github.com/Aurala/cybersecuritybase2022_project_1
+Installation:
+- Clone the repository (see above)
+- Create the database
+   python3 manage.py makemigrations
+   python3 manage.py makemigrations gamez
+   python3 manage.py migrate
+   python3 manage.py initdata
+- Run
+   python3 manage.py runserver
+- Browse to http://localhost:8000
+- Register an account or use any of the test users
+    tupu / password (user/collection id: 1)
+    hupu / password (user/collection id: 2)
+    lupu / password (user/collection id: 3)
+    
+FLAW 1:
+Link: ***
+Description:
+A05:2021 Security Misconfiguration (default settings)
+
+The application was created using command "django-admin startproject". Most default settings remain. The notable ones that can be misused by attacker:
+
+- DEBUG mode is enabled -> a malicious actor can get useful feedback for the request tampering efforts
+- Admin interface is not removed/hidden/renamed -> can be targeted with a brute-force attack
+
+Fix:
+Default settings need always to be hardened after the project is finished and moved to production.
+Debug = False ***
+urlpatterns = [
+    path('admin/', admin.site.urls),
+
+
+FLAW 2:
+Link: ***
+Description:
+A01:2021 Broken Access Control (insecure direct object reference)
+
+None of the views manipulating data validate the input sent by the user. A malicious user can tamper the parameters using Burp Suite or OWASP ZAP, for example:
+
+- add games to other people's collections (addView)
+- delete games in other people's collections (deleteView)
+
+Fix:
+
+
+FLAW 3:
+***
+Description:
+A03:2021 Injection (XSS)
+
+Each registered user has a game collection. Users can add games to their collections. When adding a game, the form asks for a link to a webpage containing more information about the game.
+
+The input is not sanitized. It is used directly in the game listing. This is a problem because
+- The game listing can be shared with other people
+- The flaw 2 makes it possible to add a game (and XSS) to other person's game collection without their knowledge
+
+Exploit:
+- Log in
+- Click "add a game"
+- Type in the 'Info' field (without quotes): "javascript:alert('XSS');"
+- Click the game thumbnail and an alert should show up
+
+('Thumbnail' is also used unsanitized as IMG tag's SRC. This is potentially exploitable.)
+
+Fix:
+
+
+FLAW 4:
+Link: ***
+Description:
+A02:2021 Cryptographic Failure (weak crypto keys) feat. A01:2021 Broken Access Control (insecure direct object reference)
+
+The application has a feature that allows non-logged users to see other people's video game collections using a sharing url (http://localhost:8000/brag/<str:token>). The token is a SHA-256 hash which is generated from the user's auth_user.id (1, 2, 3...). A sophisticated user who decrypts a token (in just seconds for example at https://www.dcode.fr/sha256-hash) and realizes it is based on an AUTOINCREMENT, can generate valid tokens and access the game collections of other people.
+
+Fix: A proper salt should be used when generating the hash. In the fix I use a randomized string.
+
+
+FLAW 5:
+Link: ***
+Description:
+A08:2021-Software and Data Integrity Failures (insecure deserialization) feat. A06:2021-Vulnerable and Outdated Components (pickle)
+
+The application lets user to make an offline backup of his/her data and then restore it to the database. The backup is made by serializing the database objects into downloadable base64 encoded binary files using a Python library called pickle. The restore process uses also the pickle library to deserialize uploaded into database objects.
+
+A malicious user can replace the backup file with a malicious payload (an os.system object) and run arbitrary commands on the server. In other words, deserializing untrusted objects this way enables a Remote Code Exploit, RCE.
+
+Malicious payloads can be generated with this script (pickle_payload_generator.py):
+
+    import pickle
+    import os
+    import base64
+
+    class generate_payload(object):
+        def __reduce__(self):  
+            return (os.system, ("whoami", ))
+                
+    pickle_data = pickle.dumps(generate_payload())
+    with open("payload_base64.txt", "wb") as file:
+        file.write(base64.b64ecode(pickle_data))
+
+Fix: This approach can not be made secure.
+
+Second, it would be wise to forget the serialization approach and design a backup file format (based on JSON/YAML/XML/CSV/similar) and then create functions that write and read this format validating the inputs. The files should be encrypted and signed before letting user access them.
+
+In this case the fix is to disable the functionality.
