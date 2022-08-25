@@ -15,9 +15,9 @@ def indexView(request):
     
     # When a new user logs in, a game collection needs to be created
     if Collection.objects.filter(user_id=uid).first() == None:
-        collection = Collection(user=User.objects.get(id=uid), name="My Awesome Game Collection", key='')
+        key = hashlib.sha256(str(uid).encode('utf-8')).hexdigest()
+        collection = Collection(user=User.objects.get(id=uid), name="My Awesome Game Collection", key=key)
         collection.save()
-        # TODO: Replace the temp key with a SHA-256 hash
     
     collection = Collection.objects.filter(user_id=uid).first()
     games = Game.objects.filter(collection_id=collection.id).select_related('platform')
