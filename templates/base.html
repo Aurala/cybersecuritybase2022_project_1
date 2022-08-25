@@ -10,7 +10,9 @@
 
     <body>
 
-        You are logged in as {{ request.user }}. <a href="{% url 'logout' %}">Log out.</a>
+        {% if request.user.is_authenticated %}
+            <p>You are logged in as {{ request.user }}. <a href="{% url 'logout' %}">Log out.</a></p>
+        {% endif %}
 
         <div id="site-wrapper">
             {% block content %}
