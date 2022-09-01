@@ -1,106 +1,89 @@
 LINK: https://github.com/Aurala/cybersecuritybase2022_project_1
+
 Installation:
-- Clone the repository (see above)
-- Create the database
-   python3 manage.py makemigrations
-   python3 manage.py makemigrations gamez
-   python3 manage.py migrate
-   python3 manage.py initdata
-- Run
-   python3 manage.py runserver
-- Browse to http://localhost:8000
-- Register an account or use any of the test users
-    tupu / password (user/collection id: 1)
-    hupu / password (user/collection id: 2)
-    lupu / password (user/collection id: 3)
-    
+  - Clone the repository
+  - Initialize the database (note: the name of Python 3 interpreter can vary between OSes)
+    - python3 manage.py makemigrations
+    - python3 manage.py makemigrations gamez
+    - python3 manage.py migrate
+    - python3 manage.py initdata
+  - Run
+    - python3 manage.py runserver
+  - Browse to http://localhost:8000
+  - Register an account or use any of the automatically created test users
+    - tupu / password (user/collection id: 1, game ids: 1-3)
+    - hupu / password (user/collection id: 2, game ids: 4-6)
+    - lupu / password (user/collection id: 3, game ids: 7-9)
+
 FLAW 1:
-Link: ***
-Description:
+https://github.com/Aurala/cybersecuritybase2022_project_1/blob/f3c4baf0990502108c7d9a3de055383e98c73d22/cybersecuritybase2022_project_1/settings.py#L26
+https://github.com/Aurala/cybersecuritybase2022_project_1/blob/f3c4baf0990502108c7d9a3de055383e98c73d22/cybersecuritybase2022_project_1/urls.py#L20
 A05:2021 Security Misconfiguration (default settings)
-
-The application was created using command "django-admin startproject". Most default settings remain. The notable ones that can be misused by attacker:
-
-- DEBUG mode is enabled -> a malicious actor can get useful feedback for the request tampering efforts
-- Admin interface is not removed/hidden/renamed -> can be targeted with a brute-force attack
-
-Fix:
-Default settings need always to be hardened after the project is finished and moved to production.
-Debug = False ***
-urlpatterns = [
-    path('admin/', admin.site.urls),
-
+The application was created using command "django-admin startproject". Most default settings remain. For example:
+  - DEBUG mode is enabled -> a malicious actor can get useful feedback for the request tampering efforts
+  - Admin interface is not removed/hidden/renamed -> can be targeted with a brute-force attack
+The settings need hardening, i.e. turn off debug logging and rename the admin interface.
+Fixes: ***
 
 FLAW 2:
-Link: ***
-Description:
+***
 A01:2021 Broken Access Control (insecure direct object reference)
-
-None of the views manipulating data validate the input sent by the user. A malicious user can tamper the parameters using Burp Suite or OWASP ZAP, for example:
-
-- add games to other people's collections (addView)
-- delete games in other people's collections (deleteView)
-
-Fix:
-
+None of the views manipulating data validate the parameters or ownerships. A malicious user can tamper the parameters to, for example, add games to / delete games from other people's game collections.
+As tupu, follow these steps to add a game to hupu's game collection:
+  - click 'Add a game'
+  - fill in the form
+  - intercept the form submission using Burp Suite or OWASP ZAP
+  - change the value of 'collection' from 1 to 2
+  - submit the form
+Every view manipulating data needs to be changed. In insert operations, the user/collection id must be retrieved from the session (not from the values submitted by the client). In edit/delete operations the view must not delete the given record, but the given record owned by the current user.
+Fixes: ***
 
 FLAW 3:
 ***
-Description:
 A03:2021 Injection (XSS)
-
-Each registered user has a game collection. Users can add games to their collections. When adding a game, the form asks for a link to a webpage containing more information about the game.
-
-The input is not sanitized. It is used directly in the game listing. This is a problem because
-- The game listing can be shared with other people
-- The flaw 2 makes it possible to add a game (and XSS) to other person's game collection without their knowledge
-
-Exploit:
-- Log in
-- Click "add a game"
-- Type in the 'Info' field (without quotes): "javascript:alert('XSS');"
-- Click the game thumbnail and an alert should show up
-
-('Thumbnail' is also used unsanitized as IMG tag's SRC. This is potentially exploitable.)
-
-Fix:
-
+Each registered user has a game collection. Each user can add games to their collections. When adding a game, the form asks for a link to a webpage containing more information about the game (field 'Info'). The input is not sanitized. It is used as-is in the game listing. This would not be a problem if the user himself/herself was the only person seeing the listing. This is not the case as the user can:
+  - share the the game listing can be shared with other people (the "brag url" at the bottom of the page)
+  - combined with the flaw 2 makes it possible to add a game (and XSS) to other person's game collection without their knowledge
+As tupu, follow these steps to access lupu's cookie to the site:
+  - click 'Add a game'
+  - fill in the form, enter JavaScript code (without quotes) to field 'Info': "javascript:alert(document.cookie);"
+  - intercept the form submission using Burp Suite or OWASP ZAP
+  - change the value of 'collection' from 1 to 3
+  - submit the form
+  - wait until lupu enters the site and click the new game in his collection  
+(Note 1: The simple example XSS above does not yet exfiltrate the cookie to tupu, it just prompts the cookie to the cookie's owner, lupu)
+(Note 2: Field 'Thumbnail' is also used unsanitized and used in an IMG tag in a game listing. The XSS can potentially trigger without any action from the victim.)
+Fixes: ***
 
 FLAW 4:
-Link: ***
-Description:
+***
 A02:2021 Cryptographic Failure (weak crypto keys) feat. A01:2021 Broken Access Control (insecure direct object reference)
-
-The application has a feature that allows non-logged users to see other people's video game collections using a sharing url (http://localhost:8000/brag/<str:token>). The token is a SHA-256 hash which is generated from the user's auth_user.id (1, 2, 3...). A sophisticated user who decrypts a token (in just seconds for example at https://www.dcode.fr/sha256-hash) and realizes it is based on an AUTOINCREMENT, can generate valid tokens and access the game collections of other people.
-
-Fix: A proper salt should be used when generating the hash. In the fix I use a randomized string.
-
+The application has a feature that allows non-logged users to see other people's video game collections using a "brag URL" (http://localhost:8000/brag/<str:token>). The token is a SHA-256 hash which is generated from the user's auth_user.id (1, 2, 3...). A sophisticated user who manages to decrypt the token, can figure out the pattern and generate valid tokens to access the game collections any user.
+An anonymous user who receives a brag URL (http://localhost:8000/brag/d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35) can follow these instructions to exploit it:
+  - go to https://www.dcode.fr/sha256-hash
+  - insert the token to the decoded, hit 'Decrypt'
+  - wait for 3 seconds and discover that the token is generated from '2'
+  - type (without quotes) '1' to the encoder part of the form, hit 'Encrypt'
+  - use the generated token (6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b) to access tupu's game collection
+This design is based on matching hashes - the string that was used to generate the hash is irrelevant as soon as the hash is created. The fix is to use a long-enough random string to generate the hash.
+(Note 1: The author considers the Python pseudo-random number generator to be random enough so that it can be used for the purpose.)
+(Note 2: Of course, no game collection should be accessible only by a token - the user should have a on/off switch for the sharing and the default should be 'off'.)
+Fixes: ***
 
 FLAW 5:
-Link: ***
-Description:
+***
 A08:2021-Software and Data Integrity Failures (insecure deserialization) feat. A06:2021-Vulnerable and Outdated Components (pickle)
-
-The application lets user to make an offline backup of his/her data and then restore it to the database. The backup is made by serializing the database objects into downloadable base64 encoded binary files using a Python library called pickle. The restore process uses also the pickle library to deserialize uploaded into database objects.
-
-A malicious user can replace the backup file with a malicious payload (an os.system object) and run arbitrary commands on the server. In other words, deserializing untrusted objects this way enables a Remote Code Exploit, RCE.
-
-Malicious payloads can be generated with this script (pickle_payload_generator.py):
-
-    import pickle
-    import os
-    import base64
-
-    class generate_payload(object):
-        def __reduce__(self):  
-            return (os.system, ("whoami", ))
-                
-    pickle_data = pickle.dumps(generate_payload())
-    with open("payload_base64.txt", "wb") as file:
-        file.write(base64.b64ecode(pickle_data))
-
-Fix: This approach can not be made secure.
-
-Second, it would be wise to forget the serialization approach and design a backup file format (based on JSON/YAML/XML/CSV/similar) and then create functions that write and read this format validating the inputs. The files should be encrypted and signed before letting user access them.
-
-In this case the fix is to disable the functionality.
+The application lets any user to make an offline backup file of his/her data. The backup files can later be uploaded to be restored. The application does the backup by serializing the database objects into downloadable base64-encoded binary files. This is done using a Python standard library called pickle. The restore process uses the same pickle library to deserialize objects.
+However, a malicious user can replace the backup file with a malicious payload (an os.system object) and run arbitrary commands on the server. In other words, deserializing untrusted objects this way enables a Remote Code Exploit, RCE.
+As any user, follow these steps to pwn the server:
+  - open the script 'pickle_payload_generator.py' (in the same repository) in an editor
+  - replace 'whoami' with OS commands of your own (install a remote shell, exfiltrate files, etc)
+  - run the script, it generates a payload file ('payload_base64.txt')
+  - log in
+  - click 'Restore'
+  - upload the generated file
+  - take cover, the code is executed immediately
+The Python Software Foundation warns against using pickle to deserialize data from untrusted sources.
+The best solution would be to remove the offline restore functionality. If this is not viable, JSON should be used instead. In any case preventing the tampering with a signature is a must.
+(Note: The restore function does not actually restoring the data. The exploit requires only that a tampered file is passed to the deserialization library so )
+Fixes: ***

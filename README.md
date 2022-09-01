@@ -9,9 +9,9 @@
 
 ## About
 
-This Django application is vulnerable (by intention).
+This is my first project work for [Cyber Security Base 2022 MOOC](https://cybersecuritybase.mooc.fi/), organized by University of Helsinki.
 
-It is the first project work for [Cyber Security Base 2022 MOOC](https://cybersecuritybase.mooc.fi/), organized by University of Helsinki.
+The application, called Gamez, is intentionally vulnerable (and pretty useless) video game cataloging application.
 
 Anyone with basic hacking skills can take over the application, its database and potentially cause mess in your computer system or network. This application is meant to be ran locally behind a firewall, and only for educational purposes.
 
@@ -62,9 +62,9 @@ python3 manage.py initdata
 
 The last line is optional. It creates automatically three test users that each have a game collection of three games:
 
-- tupu/password (user/collection id: 1)
-- hupu/password (user/collection id: 2)
-- lupu/password (user/collection id: 3)
+- tupu/password (user/collection id: 1, game ids: 1-3)
+- hupu/password (user/collection id: 2, game ids: 4-6)
+- lupu/password (user/collection id: 3, game ids: 7-9)
 
 _To reset the database at any time, delete the db.sqlite3 file and run commands above again._
 
