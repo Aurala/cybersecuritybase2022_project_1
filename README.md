@@ -1,12 +1,5 @@
 # Project I for Cyber Security Base 2022 MOOC
 
-## Table of Contents
-
-- [About](#about)
-- [Getting Started](#getting_started)
-- [Usage](#usage)
-- [Contributing](../CONTRIBUTING.md)
-
 ## About
 
 This is my first project work for [Cyber Security Base 2022 MOOC](https://cybersecuritybase.mooc.fi/), organized by University of Helsinki.
@@ -38,7 +31,7 @@ The assignment was to write an application that has at least 5 vulnerabilities f
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine.
 
 ### Prerequisites
 
