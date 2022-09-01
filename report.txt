@@ -16,27 +16,28 @@ Installation:
     - lupu / password (user/collection id: 3, game ids: 7-9)
 
 FLAW 1:
-https://github.com/Aurala/cybersecuritybase2022_project_1/blob/f3c4baf0990502108c7d9a3de055383e98c73d22/cybersecuritybase2022_project_1/settings.py#L26
+Flaw: https://github.com/Aurala/cybersecuritybase2022_project_1/blob/f3c4baf0990502108c7d9a3de055383e98c73d22/cybersecuritybase2022_project_1/settings.py#L26
 A05:2021 Security Misconfiguration (default settings)
 The application was created using command "django-admin startproject". Most default settings remain.
 Most importantly, the DEBUG mode needs to be disabled. Otherwise a malicious actor can get valuable feedback for his/her tampering efforts. In the production deployment also the access to the admin interface must be restricted/blocked by NGINX, Apache or similar.
-Fixes: ***
+Fix: ***
 
 FLAW 2:
-***
+Flaw: ***
 A01:2021 Broken Access Control (insecure direct object reference)
-None of the views manipulating data validate the parameters or ownerships. A malicious user can tamper the parameters to, for example, add games to / delete games from other people's game collections.
+deleteView does not validate the ownership --> a malicious user can delete games from other people's game collections.
+addView trusts the collection id received from a form --> a malicious user can add games to other people's game collections.
 As tupu, follow these steps to add a game to hupu's game collection:
   - click 'Add a game'
   - fill in the form
   - intercept the form submission using Burp Suite or OWASP ZAP
   - change the value of 'collection' from 1 to 2
   - submit the form
-Every view manipulating data needs to be changed. In insert operations, the user/collection id must be retrieved from the session (not from the values submitted by the client). In edit/delete operations the view must not delete the given record, but the given record owned by the current user.
-Fixes: ***
+In insert operations the user/collection id must be retrieved from the session (not from the values submitted by the client). In edit/delete operations the user id must be used as an extra security parameter.
+Fix: ***
 
 FLAW 3:
-***
+Flaw:
 A03:2021 Injection (XSS)
 Each registered user has a game collection. Each user can add games to their collections. When adding a game, the form asks for a link to a webpage containing more information about the game (field 'Info'). The input is not sanitized. It is used as-is in the game listing. This would not be a problem if the user himself/herself was the only person seeing the listing. This is not the case as the user can:
   - share the the game listing can be shared with other people (the "brag url" at the bottom of the page)
@@ -50,10 +51,10 @@ As tupu, follow these steps to access lupu's cookie to the site:
   - wait until lupu enters the site and click the new game in his collection  
 (Note 1: The simple example XSS above does not yet exfiltrate the cookie to tupu, it just prompts the cookie to the cookie's owner, lupu)
 (Note 2: Field 'Thumbnail' is also used unsanitized and used in an IMG tag in a game listing. The XSS can potentially trigger without any action from the victim.)
-Fixes: ***
+Fix: ***
 
 FLAW 4:
-***
+Flaw: ***
 A02:2021 Cryptographic Failure (weak crypto keys) feat. A01:2021 Broken Access Control (insecure direct object reference)
 The application has a feature that allows non-logged users to see other people's video game collections using a "brag URL" (http://localhost:8000/brag/<str:token>). The token is a SHA-256 hash which is generated from the user's auth_user.id (1, 2, 3...). A sophisticated user who manages to decrypt the token, can figure out the pattern and generate valid tokens to access the game collections any user.
 An anonymous user who receives a brag URL (http://localhost:8000/brag/d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35) can follow these instructions to exploit it:
@@ -65,10 +66,10 @@ An anonymous user who receives a brag URL (http://localhost:8000/brag/d4735e3a26
 This design is based on matching hashes - the string that was used to generate the hash is irrelevant as soon as the hash is created. The fix is to use a long-enough random string to generate the hash.
 (Note 1: The author considers the Python pseudo-random number generator to be random enough so that it can be used for the purpose.)
 (Note 2: Of course, no game collection should be accessible only by a token - the user should have a on/off switch for the sharing and the default should be 'off'.)
-Fixes: ***
+Fix: ***
 
 FLAW 5:
-***
+Flaw: ***
 A08:2021-Software and Data Integrity Failures (insecure deserialization) feat. A06:2021-Vulnerable and Outdated Components (pickle)
 The application lets any user to make an offline backup file of his/her data. The backup files can later be uploaded to be restored. The application does the backup by serializing the database objects into downloadable base64-encoded binary files. This is done using a Python standard library called pickle. The restore process uses the same pickle library to deserialize objects.
 However, a malicious user can replace the backup file with a malicious payload (an os.system object) and run arbitrary commands on the server. In other words, deserializing untrusted objects this way enables a Remote Code Exploit, RCE.
@@ -83,4 +84,4 @@ As any user, follow these steps to pwn the server:
 The Python Software Foundation warns against using pickle to deserialize data from untrusted sources.
 The best solution would be to remove the offline restore functionality. If this is not viable, JSON should be used instead. In any case preventing the tampering with a signature is a must.
 (Note: The restore function does not actually restoring the data. The exploit requires only that a tampered file is passed to the deserialization library so )
-Fixes: ***
+Fix: ***
