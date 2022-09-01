@@ -67,7 +67,7 @@ def addView(request):
     return redirect(indexView)
 
 
-# Let's the customer to download a backup of his game collection
+# Lets the customer to download a backup of his game collection
 def backupView(request):
 
     uid = request.user.id
@@ -84,7 +84,7 @@ def backupView(request):
     return response
 
 
-# Let's the customer to upload a backup file of his game collection
+# Lets the customer to upload a backup file of his game collection
 def uploadView(request):
     return render(request, 'gamez/upload.html')
 
