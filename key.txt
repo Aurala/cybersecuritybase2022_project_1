@@ -1,9 +1,0 @@
-import random, string
-
-
-# This function generates sharing keys from random strings
-# Found the random string generation spell from https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
-def generate_key():
-    key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=64))
-    encoded_key = hashlib.sha256(key.encode('utf-8')).hexdigest()
-    return encoded_key
