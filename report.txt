@@ -17,12 +17,9 @@ Installation:
 
 FLAW 1:
 https://github.com/Aurala/cybersecuritybase2022_project_1/blob/f3c4baf0990502108c7d9a3de055383e98c73d22/cybersecuritybase2022_project_1/settings.py#L26
-https://github.com/Aurala/cybersecuritybase2022_project_1/blob/f3c4baf0990502108c7d9a3de055383e98c73d22/cybersecuritybase2022_project_1/urls.py#L20
 A05:2021 Security Misconfiguration (default settings)
-The application was created using command "django-admin startproject". Most default settings remain. For example:
-  - DEBUG mode is enabled -> a malicious actor can get useful feedback for the request tampering efforts
-  - Admin interface is not removed/hidden/renamed -> can be targeted with a brute-force attack
-The settings need hardening, i.e. turn off debug logging and rename the admin interface.
+The application was created using command "django-admin startproject". Most default settings remain.
+Most importantly, the DEBUG mode needs to be disabled. Otherwise a malicious actor can get valuable feedback for his/her tampering efforts. In the production deployment also the access to the admin interface must be restricted/blocked by NGINX, Apache or similar.
 Fixes: ***
 
 FLAW 2:
