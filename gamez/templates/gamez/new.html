@@ -6,7 +6,6 @@
 
 <form method="POST" action="add/">
     {% csrf_token %}
-    <input type="hidden" id="collection" name="collection" value="{{ collection.id }}">
     <label for="thumbnail">Thumbnail (url):</label><br/>
     <input type="text" id="thumbnail" name="thumbnail"><br/>
     <label for="info">Info (url):</label><br/>

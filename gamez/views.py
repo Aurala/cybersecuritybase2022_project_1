@@ -36,17 +36,19 @@ def bragView(request, key):
 
 
 # Deletes a game from a collection
-# Vulnerability: possibility to delete other people's games because the object's owner is not checked
+# Vulnerability FIXED: possibility to delete other people's games because the object's owner is not checked
 @login_required
 def deleteView(request, id):
 
-    Game.objects.filter(id=id).delete()
+    uid = request.user.id
+    collection = Collection.objects.filter(user_id=uid).first()
+    Game.objects.filter(id=id, collection_id=collection.id).delete()
 
     return redirect(indexView)
 
 
 # This page is used to add new games to a collection
-# Vulnerability: collection id is passed through the form, can be tampered
+# Vulnerability FIXED: collection id is passed through the form, can be tampered
 @login_required
 def newView(request):
 
@@ -58,19 +60,21 @@ def newView(request):
 
 
 # Adds a game to a collection
-# Vulnerability: possibility to add games to other people's collections because the ownership of collection is not checked
+# Vulnerability FIXED: possibility to add games to other people's collections because the ownership of collection is not checked
 # Vulnerability: fields are not sanitized for malicious JavaScript code (XSS)
 @login_required
 def addView(request):
 
-    collection = request.POST.get('collection')
+    uid = request.user.id
+    collection = Collection.objects.filter(user_id=uid).first()
+
     thumbnail = request.POST.get('thumbnail')
     info = request.POST.get('info')
     name = request.POST.get('name')
     platform = request.POST.get('platform')
     rating = request.POST.get('rating')
 
-    game = Game(collection=Collection.objects.get(id=collection), thumbnail=thumbnail, info=info, name=name, platform=Platform.objects.get(id=platform), rating=rating)
+    game = Game(collection=Collection.objects.get(id=collection.id), thumbnail=thumbnail, info=info, name=name, platform=Platform.objects.get(id=platform), rating=rating)
     game.save()
     
     return redirect(indexView)
