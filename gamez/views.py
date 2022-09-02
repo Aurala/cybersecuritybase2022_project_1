@@ -40,8 +40,7 @@ def bragView(request, key):
 @login_required
 def deleteView(request, id):
 
-    obj = get_object_or_404(Game, id=id)
-    obj.delete()
+    Game.objects.filter(id=id).delete()
 
     return redirect(indexView)
 
