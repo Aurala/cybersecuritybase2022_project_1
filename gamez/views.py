@@ -8,6 +8,7 @@ from .models import User, Collection, Game, Platform
 
 
 # The main page that lets users manage their game collection
+# Vulnerability: the key is generated from user id, easy to decode and tamper
 @login_required
 def indexView(request):
     
@@ -26,12 +27,17 @@ def indexView(request):
 
 
 # The no-login brag page that a user can share with other people
-def bragView(request, user):
-    return render(request, 'gamez/brag.html', {})
+def bragView(request, key):
+
+    collection = Collection.objects.filter(key=key).first()
+    games = Game.objects.filter(collection_id=collection.id).select_related('platform')
+
+    return render(request, 'gamez/brag.html', {'collection': collection, 'games': games})
 
 
 # Delete a game from a collection
 # Vulnerability: possibility to delete other people's games because the object's owner is not checked
+@login_required
 def deleteView(request, id):
 
     obj = get_object_or_404(Game, id=id)
@@ -41,6 +47,8 @@ def deleteView(request, id):
 
 
 # On this page the users can add new games
+# Vulnerability: collection id is passed through the form, can be tampered
+@login_required
 def newView(request):
 
     uid = request.user.id
@@ -52,6 +60,7 @@ def newView(request):
 
 # Add a game to a collection
 # Vulnerability: possibility to add games to other people's collections because the ownership of collection is not checked
+@login_required
 def addView(request):
 
     collection = request.POST.get('collection')
@@ -68,6 +77,7 @@ def addView(request):
 
 
 # Lets the customer to download a backup of his game collection
+@login_required
 def backupView(request):
 
     uid = request.user.id
@@ -85,17 +95,20 @@ def backupView(request):
 
 
 # Lets the customer to upload a backup file of his game collection
+@login_required
 def uploadView(request):
     return render(request, 'gamez/upload.html')
 
 
 # Processes the uploaded backup file
+# Vulnerability: pickle payloads can be tampered easily, the code below will execute OS commands (RCE)
+@login_required
 def restoreView(request):
 
     file = base64.b64decode(request.FILES['file'].read())
     games = pickle.loads(file)
     
-    # The actual restore function has not been implemeted
-    # The purpose is to demonstrate the exploit which is triggered by pickle.loads(), i.e. in preparing the data
+    # The actual restore function has not been implemented
+    # The purpose is to demonstrate the exploit which is triggered by pickle.loads(), i.e. already when loading the data
 
     return redirect(indexView)

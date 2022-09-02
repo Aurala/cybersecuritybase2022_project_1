@@ -2,6 +2,26 @@
 {% load static %}
 {% block content %}
 
-<h2>Placeholder for the video game collection brag page</h2>
+<h1>{{ collection.name }}</h1>
+
+<table>
+    <tr>
+        <th>Thumbnail</th>
+        <th>Name</th>
+        <th>Platform</th>
+        <th>Rating</th>
+    </tr>
+    {% for game in games %}
+    <tr>
+        <td><a href="{{ game.info }}"><img src="{{ game.thumbnail }}" height="100"></a></td>
+        <td>{{ game.name }}</td>
+        <td>{{ game.platform.name }}</td>
+        <td>
+            {{ game.rating }} / 5
+        </td>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 
 {% endblock %}
