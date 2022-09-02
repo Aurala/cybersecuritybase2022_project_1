@@ -1,4 +1,6 @@
-LINK: https://github.com/Aurala/cybersecuritybase2022_project_1
+Link: https://github.com/Aurala/cybersecuritybase2022_project_1
+
+The application is a vulnerable-by-design video game collection manager called Gamez.
 
 Installation:
   - Clone the repository
@@ -15,74 +17,108 @@ Installation:
     - hupu / password (user/collection id: 2, game ids: 4-6)
     - lupu / password (user/collection id: 3, game ids: 7-9)
 
-FLAW 1:
-https://github.com/Aurala/cybersecuritybase2022_project_1/blob/57ab1ec0d3b7e56623de94e7b4185f990f5d1071/cybersecuritybase2022_project_1/settings.py#L26
-A05:2021 Security Misconfiguration (default settings)
-The application was created using command "django-admin startproject". Most default settings remain.
-Most importantly, the DEBUG mode needs to be disabled. Otherwise a malicious actor can get valuable feedback for his/her tampering efforts. In the production deployment also the access to the admin interface must be restricted/blocked by NGINX, Apache or similar.
-Fix: https://github.com/Aurala/cybersecuritybase2022_project_1/compare/master...fix_1
+Flaw 1: A05:2021 Security Misconfiguration (default settings)
 
-FLAW 2:
-https://github.com/Aurala/cybersecuritybase2022_project_1/blob/0dc7878e5f7e5a25d9d15a255a7a9f0c5a7c1fe2/gamez/views.py#L43
-https://github.com/Aurala/cybersecuritybase2022_project_1/blob/0dc7878e5f7e5a25d9d15a255a7a9f0c5a7c1fe2/gamez/views.py#L65
-A01:2021 Broken Access Control (insecure direct object reference)
-deleteView does not validate the ownership --> a malicious user can delete games from other people's game collections.
-addView trusts the collection id received from a form --> a malicious user can add games to other people's game collections.
-As tupu, follow these steps to add a game to hupu's game collection:
-  - click 'Add a game'
-  - fill in the form
-  - intercept the form submission using Burp Suite or OWASP ZAP
-  - change the value of 'collection' from 1 to 2
-  - submit the form
-In insert operations the user/collection id must be retrieved from the session (not from the values submitted by the client). In edit/delete operations the user id must be used as an extra security parameter.
-Fix: https://github.com/Aurala/cybersecuritybase2022_project_1/compare/master...fix_2
+  https://github.com/Aurala/cybersecuritybase2022_project_1/blob/57ab1ec0d3b7e56623de94e7b4185f990f5d1071/cybersecuritybase2022_project_1/settings.py#L26
+  
+  The application was created using command "django-admin startproject". Most default settings remain.
 
-FLAW 3:
-https://github.com/Aurala/cybersecuritybase2022_project_1/blob/0dc7878e5f7e5a25d9d15a255a7a9f0c5a7c1fe2/gamez/views.py#L72
-A03:2021 Injection (XSS)
-Each registered user has a game collection. Each user can add games to their collections. When adding a game, the form asks for a link to a webpage containing more information about the game (field 'Info'). The input is not sanitized. It is used as-is in the game listing. This would not be a big problem if the user himself/herself was the only person seeing the listing. This is not the case as the user can:
-  - share the the game listing with other people (the "brag url" at the bottom of the page)
-  - (combined with the flaw 2) add a game to other person's game collection without their knowledge
-As tupu, follow these steps to access lupu's cookie to the site:
-  - click 'Add a game'
-  - fill in the form, enter JavaScript code (without quotes) to field 'Info': "javascript:alert(document.cookie);"
-  - intercept the form submission using Burp Suite or OWASP ZAP
-  - change the value of 'collection' from 1 to 3
-  - submit the form
-  - wait until lupu enters the site and click the new game in his collection  
-(Note 1: The simple example XSS above does not yet exfiltrate the cookie to tupu, it just prompts the cookie to the cookie's owner, lupu)
-(Note 2: Field 'Thumbnail' is also used unsanitized and used in an IMG tag in a game listing. The XSS can potentially trigger without any action from the victim.)
-Fix: https://github.com/Aurala/cybersecuritybase2022_project_1/compare/master...fix_3
+  Most importantly, the DEBUG mode needs to be disabled. Otherwise a malicious actor can get valuable feedback for his/her tampering efforts.
+  
+  Also in the production deployment the access to the /admin must be restricted/blocked by NGINX, Apache or similar, SECRET_KEY must be stored in the AWS Secrets Manager or similar.
 
-FLAW 4:
-https://github.com/Aurala/cybersecuritybase2022_project_1/blob/0dc7878e5f7e5a25d9d15a255a7a9f0c5a7c1fe2/gamez/views.py#L19
-A02:2021 Cryptographic Failure (weak crypto keys) feat. A01:2021 Broken Access Control (insecure direct object reference)
-The application has a feature that allows non-logged users to see other people's video game collections using a "brag URL" (http://localhost:8000/brag/<str:token>). The token is a SHA-256 hash which is generated from the user's auth_user.id (1, 2, 3...). A sophisticated user who manages to decrypt the token, can figure out the pattern and generate valid tokens to access the game collections any user.
-An anonymous user who receives a brag URL (http://localhost:8000/brag/d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35) can follow these instructions to exploit it:
-  - go to https://www.dcode.fr/sha256-hash
-  - insert the token to the decoded, hit 'Decrypt'
-  - wait for 3 seconds and discover that the token is generated from '2'
-  - type (without quotes) '1' to the encoder part of the form, hit 'Encrypt'
-  - use the generated token (6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b) to access tupu's game collection
-This design is based on matching hashes - the string that was used to generate the hash is irrelevant as soon as the hash is created. The fix is to use a long-enough random string to generate the hash.
-(Note 1: The author considers the Python pseudo-random number generator to be random enough so that it can be used for the purpose.)
-(Note 2: Of course, no game collection should be accessible only by a token - the user should have a on/off switch for the sharing and the default should be 'off'.)
-Fix: https://github.com/Aurala/cybersecuritybase2022_project_1/compare/master...fix_4
+  Fix: https://github.com/Aurala/cybersecuritybase2022_project_1/compare/master...fix_1
 
-FLAW 5:
-https://github.com/Aurala/cybersecuritybase2022_project_1/blob/0dc7878e5f7e5a25d9d15a255a7a9f0c5a7c1fe2/gamez/views.py#L108
-A08:2021-Software and Data Integrity Failures (insecure deserialization) feat. A06:2021-Vulnerable and Outdated Components (pickle)
-The application lets any user to make an offline backup file of his/her data. The backup files can later be uploaded to be restored. The application does the backup by serializing the database objects into downloadable base64-encoded binary files. This is done using a Python standard library called pickle. The restore process uses the same pickle library to deserialize objects.
-However, a malicious user can replace the backup file with a malicious payload (an os.system object) and run arbitrary commands on the server. In other words, deserializing untrusted objects this way enables a Remote Code Exploit, RCE.
-As any user, follow these steps to pwn the server:
-  - open the script 'pickle_payload_generator.py' (in the same repository) in an editor
-  - replace 'whoami' with OS commands of your own (install a remote shell, exfiltrate files, etc)
-  - run the script, it generates a payload file ('payload_base64.txt')
-  - log in
-  - click 'Restore'
-  - upload the generated file
-  - take cover, the code is executed immediately
-The Python Software Foundation warns against using pickle to deserialize data from untrusted sources.
-The best solution would be to remove the offline restore functionality. If this is not viable, JSON should be used instead. In any case preventing the tampering with a signature is a must.
-(Note: The restore function does not actually restoring the data. The exploit requires only that a tampered file is passed to the deserialization library so )
-Fix: https://github.com/Aurala/cybersecuritybase2022_project_1/compare/master...fix_5
+Flaw 2: A01:2021 Broken Access Control (insecure direct object reference)
+
+  https://github.com/Aurala/cybersecuritybase2022_project_1/blob/0dc7878e5f7e5a25d9d15a255a7a9f0c5a7c1fe2/gamez/views.py#L43
+  https://github.com/Aurala/cybersecuritybase2022_project_1/blob/eb03a0a5ee5a9ef054b25d9aceb97da98758aeff/gamez/views.py#L66
+
+  deleteView does not validate the ownership --> a malicious user can delete games from other people's game collections
+  addView trusts the collection id received from a form --> a malicious user can add games to other people's game collections
+
+  To exploit the vulnerability log in as tupu and follow these steps to add a game to hupu's game collection:
+    - click 'Add a game'
+    - fill in the form
+    - intercept the form submission using Burp Suite or OWASP ZAP
+    - change the value of 'collection' from 1 to 2
+    - submit the form
+
+  In addView the collection id must be resolved from the user id in the session instead of input from the client.
+
+  In deleteView it is not enough to delete the based on the game id, but the user id must be used as an extra security parameter.
+
+  Fix: https://github.com/Aurala/cybersecuritybase2022_project_1/compare/master...fix_2
+
+Flaw 3: A03:2021 Injection (XSS)
+
+  https://github.com/Aurala/cybersecuritybase2022_project_1/blob/eb03a0a5ee5a9ef054b25d9aceb97da98758aeff/gamez/views.py#L73
+
+  Each registered user has a game collection. Each user can add games to their collections. When adding a game, the form asks for a link to a webpage containing more information about the game (field 'Info'). The input is not sanitized and used as-is in the game listing.
+  
+  This would not be a big problem if the user himself/herself was the only person seeing the listing. This is not the case as the user can:
+    - share the the game listing with other people (the "brag url" at the bottom of the page)
+    - add a game to other person's game collection without their knowledge (using the flaw 2)
+
+  To exploit the vulnerability log in as tupu and follow these steps to access lupu's cookie:
+    - click 'Add a game'
+    - fill in the form, enter JavaScript code (without quotes) to field 'Info': "javascript:alert(document.cookie);"
+    - intercept the form submission using Burp Suite or OWASP ZAP
+    - change the value of 'collection' from 1 to 3
+    - submit the form
+    - wait until lupu enters the site and click the new game in his collection
+
+  Note 1: The simple example XSS above does not yet exfiltrate the cookie to tupu, it just prompts the cookie to the cookie's owner, lupu
+  Note 2: Field 'Thumbnail' is also used unsanitized and used in an IMG tag in a game listing. The XSS can potentially trigger without any action from the victim.
+
+  The best solution would be to implement the thegamesdb.net API so that thumbnails, game info etc could be fetched without inputting any URLs. In this case, however, the fix is to use a validator that check that fields 'thumbnail' and 'info' contain a valid URL.
+
+  Fix: https://github.com/Aurala/cybersecuritybase2022_project_1/compare/master...fix_3
+
+Flaw 4: A02:2021 Cryptographic Failure (weak crypto keys) feat. A01:2021 Broken Access Control (insecure direct object reference)
+
+  https://github.com/Aurala/cybersecuritybase2022_project_1/blob/0dc7878e5f7e5a25d9d15a255a7a9f0c5a7c1fe2/gamez/views.py#L19
+
+  The application has a feature that allows users to share their game collections with other people (also non-users) using a "brag URL" (http://localhost:8000/brag/<str:key>).
+  
+  The key is a SHA-256 hash which is generated from the user id (1, 2, 3...). Decrypting such a key is a trivial task. Once the malicious user figures out the pattern, he/she can easily generate valid keys and see the game collection of any user.
+
+  To exploit the vulnerability an anonymous user needs a brag URL (e.g. http://localhost:8000/brag/d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35 that belongs to hupu). These steps allow the anonymous user to access tupu's game collection:
+    - go to https://www.dcode.fr/sha256-hash
+    - insert the key to the decoded, hit 'Decrypt'
+    - wait for 3 seconds to discover that the key is generated from '2'
+    - type (without quotes) '1' to the encoder part of the form, hit 'Encrypt'
+    - use the generated key (6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b) to access tupu's game collection
+
+  The brag page is based on matching hashes. The string that was used to generate the hash is irrelevant as soon as the hash is created. The fix is to use a long-enough random string to generate the hash.
+
+  Note 1: The author considers the Python pseudo-random number generator to be random enough for the purpose
+  Note 2: Of course, no game collection should be accessible only by a key - the user should have a on/off switch for the sharing and the default should be 'off'
+
+  Fix: https://github.com/Aurala/cybersecuritybase2022_project_1/compare/master...fix_4
+
+Flaw 5: A08:2021-Software and Data Integrity Failures (insecure deserialization) feat. A06:2021-Vulnerable and Outdated Components (pickle)
+
+  https://github.com/Aurala/cybersecuritybase2022_project_1/blob/eb03a0a5ee5a9ef054b25d9aceb97da98758aeff/gamez/views.py#L109
+
+  The application lets users to make offline backups. The backup files can later be uploaded back to the application to restore data.
+  
+  The application creates the backup by serializing the database objects into downloadable base64-encoded binary files. This is done using a Python standard library called pickle. The restore process uses the same pickle library to deserialize objects.
+
+  However, a malicious user can replace the backup file contents with a malicious payload (e.g. an os.system object) and run arbitrary commands on the server. Deserializing untrusted objects this way enables a Remote Code Exploit, RCE.
+
+  To exploit the vulnerability, follow these steps to pwn the server:
+    - open the script 'pickle_payload_generator.py' (in the same repository) in an editor
+    - replace 'whoami' with OS commands of your own (install a remote shell, exfiltrate files, etc)
+    - run the script to generate a payload file ('payload_base64.txt')
+    - log in as any user
+    - click 'Upload a backup file'
+    - upload the generated payload file
+    - take cover because the code executes immediately
+
+  The Python Software Foundation warns against using pickle to deserialize data from untrusted sources.
+  The best solution would be to remove the offline restore functionality. If this is not viable, backup file format should be changed to JSON. In any case, the file should be signed to prevent tampering.
+
+  Note: The restore function does not actually restoring the data. The exploit requires only that a tampered file is passed to the deserialization library.
+
+  Fix: https://github.com/Aurala/cybersecuritybase2022_project_1/compare/master...fix_5

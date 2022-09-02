@@ -8,7 +8,7 @@ from .models import User, Collection, Game, Platform
 
 
 # The main page that lets users manage their game collection
-# Vulnerability: the key is generated from user id, easy to decode and tamper
+# Vulnerability: the key is generated from the user id, easy to decode and tamper
 @login_required
 def indexView(request):
     
@@ -35,7 +35,7 @@ def bragView(request, key):
     return render(request, 'gamez/brag.html', {'collection': collection, 'games': games})
 
 
-# Delete a game from a collection
+# Deletes a game from a collection
 # Vulnerability: possibility to delete other people's games because the object's owner is not checked
 @login_required
 def deleteView(request, id):
@@ -45,7 +45,7 @@ def deleteView(request, id):
     return redirect(indexView)
 
 
-# On this page the users can add new games
+# This page is used to add new games to a collection
 # Vulnerability: collection id is passed through the form, can be tampered
 @login_required
 def newView(request):
@@ -57,9 +57,9 @@ def newView(request):
     return render(request, 'gamez/new.html', {'collection': collection, 'platforms': platforms})
 
 
-# Add a game to a collection
+# Adds a game to a collection
 # Vulnerability: possibility to add games to other people's collections because the ownership of collection is not checked
-# Vulnerability: fields are not sanitized for malicious JavaScript code
+# Vulnerability: fields are not sanitized for malicious JavaScript code (XSS)
 @login_required
 def addView(request):
 
@@ -109,6 +109,6 @@ def restoreView(request):
     games = pickle.loads(file)
     
     # The actual restore function has not been implemented
-    # The purpose is to demonstrate the exploit which is triggered by pickle.loads(), i.e. already when loading the data
+    # The purpose is to demonstrate the exploit which is triggered by pickle.loads()
 
     return redirect(indexView)
