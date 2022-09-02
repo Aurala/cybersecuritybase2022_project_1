@@ -59,6 +59,7 @@ def newView(request):
 
 # Add a game to a collection
 # Vulnerability: possibility to add games to other people's collections because the ownership of collection is not checked
+# Vulnerability: fields are not sanitized for malicious JavaScript code
 @login_required
 def addView(request):
 
