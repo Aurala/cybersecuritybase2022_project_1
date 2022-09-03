@@ -1,14 +1,24 @@
 import hashlib
 import pickle
 import base64
+import random
+import string
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from .models import User, Collection, Game, Platform
 
 
+# Generates sharing keys from random strings
+# Got help from https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
+def generate_key():
+    key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=64))
+    encoded_key = hashlib.sha256(key.encode('utf-8')).hexdigest()
+    return encoded_key
+
+
 # The main page that lets users manage their game collection
-# Vulnerability: the key is generated from the user id, easy to decode and tamper
+# Vulnerability FIXED: the key is generated from the user id, easy to decode and tamper
 @login_required
 def indexView(request):
     
@@ -16,7 +26,7 @@ def indexView(request):
     
     # When a new user logs in, a game collection needs to be created
     if Collection.objects.filter(user_id=uid).first() == None:
-        key = hashlib.sha256(str(uid).encode('utf-8')).hexdigest()
+        key = generate_key()
         collection = Collection(user=User.objects.get(id=uid), name="My Awesome Game Collection", key=key)
         collection.save()
     
