@@ -5,6 +5,17 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from .models import User, Collection, Game, Platform
+from django import forms
+
+
+# Checks if an URL is valid, used to validate form input
+def isValidURL(url):
+    f = forms.URLField()
+    try:
+        f.clean(url)
+        return True
+    except:
+        return False
 
 
 # The main page that lets users manage their game collection
@@ -59,7 +70,7 @@ def newView(request):
 
 # Adds a game to a collection
 # Vulnerability: possibility to add games to other people's collections because the ownership of collection is not checked
-# Vulnerability: fields are not sanitized for malicious JavaScript code (XSS)
+# Vulnerability FIXED: fields are not sanitized for malicious JavaScript code (XSS)
 @login_required
 def addView(request):
 
@@ -69,6 +80,9 @@ def addView(request):
     name = request.POST.get('name')
     platform = request.POST.get('platform')
     rating = request.POST.get('rating')
+
+    if isValidURL(thumbnail) == False or isValidURL(info) == False:
+        return redirect(newView)
 
     game = Game(collection=Collection.objects.get(id=collection), thumbnail=thumbnail, info=info, name=name, platform=Platform.objects.get(id=platform), rating=rating)
     game.save()
