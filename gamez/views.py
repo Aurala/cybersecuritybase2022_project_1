@@ -1,10 +1,10 @@
 import hashlib
-import pickle
-import base64
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from .models import User, Collection, Game, Platform
+from django.core import serializers
+from django.core.signing import Signer, BadSignature
 
 
 # The main page that lets users manage their game collection
@@ -85,13 +85,22 @@ def backupView(request):
     collection = Collection.objects.filter(user_id=uid).first()
     games = Game.objects.filter(collection_id=collection.id).select_related('platform')
 
-    output = base64.b64encode(pickle.dumps(games))
+    output = serializers.serialize("json", games)
+
+    signer = Signer()
+    signed_output = signer.sign(output)
     
-    response = HttpResponse(output)
+    response = HttpResponse(signed_output)
     response['Content-Type'] = 'text/plain; charset=utf-8'
     response['Content-Disposition'] = 'attachment; filename=backup.txt'
 
     return response
+
+
+# Sends the person to a special page when tampering has been detected
+@login_required
+def cheaterView(request):
+    return render(request, 'gamez/cheater.html')
 
 
 # Lets the customer to upload a backup file of his game collection
@@ -101,14 +110,19 @@ def uploadView(request):
 
 
 # Processes the uploaded backup file
-# Vulnerability: pickle payloads can be tampered easily, the code below will execute OS commands (RCE)
+# Vulnerability FIXED: pickle payloads can be tampered easily, the code below will execute OS commands (RCE)
 @login_required
 def restoreView(request):
 
-    file = base64.b64decode(request.FILES['file'].read())
-    games = pickle.loads(file)
-    
+    file = request.FILES['file'].read().decode('utf-8')
+
+    signer = Signer()
+    try:
+        games = signer.unsign(file)
+    except BadSignature:
+        return redirect(cheaterView)
+
     # The actual restore function has not been implemented
-    # The purpose is to demonstrate the exploit which is triggered by pickle.loads()
+    # The purpose is to demonstrate the exploit which was triggered by pickle.loads()
 
     return redirect(indexView)

@@ -9,6 +9,7 @@ urlpatterns = [
     path('new/', views.newView, name='new'),
     path('new/add/', views.addView, name='add'),
     path('download/', views.backupView, name='download'),
+    path('cheater/', views.cheaterView, name='cheater'),
     path('upload/', views.uploadView, name='upload'),
     path('upload/restore/', views.restoreView, name='restore'),
 ]
