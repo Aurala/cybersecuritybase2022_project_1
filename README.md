@@ -48,6 +48,6 @@ _To reset the database at any time, delete the db.sqlite3 file and run commands 
 python3 manage.py runserver
 ```
 
-Browse to `http ://localhost:8000`, log in and start hacking. The vulnerabilities are described in a file called report.txt.
+Browse to `http://localhost:8000`, log in and start hacking. The vulnerabilities are described in a file called report.txt.
 
 Have fun! :)
