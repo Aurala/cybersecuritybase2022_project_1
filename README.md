@@ -25,7 +25,14 @@ The application has been developed/tested on macOS 12.5. There's no known reason
 
 Step 1: Clone the repository and change to the created directory
 
-Step 2: Prepare the database
+Step 2: Install requirements
+
+```bash
+pip install django==4.1 --quiet --no-input
+pip install pyyaml --quiet --no-input
+```
+
+Step 3: Prepare the database
 
 ```bash
 python3 manage.py makemigrations
